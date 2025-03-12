@@ -43,8 +43,8 @@ class ResearchAgent:
         print(f"[{self.name}] Analyzing data:\n{data}")
 
         # Analyze the data and store relevant details into the knowledge graph
-        #
-        #
+        # TODO: Implement the analysis logic here
+
         if self.knowledge_graph is not None:
             self.knowledge_graph.insert_data(data)
             print(f"[{self.name}] Stored data in KnowledgeGraph")
