@@ -1,7 +1,7 @@
 temp/
 output/
 
-
+.DS_Strore
 local_mem/
 
 # Byte-compiled / optimized / DLL files
