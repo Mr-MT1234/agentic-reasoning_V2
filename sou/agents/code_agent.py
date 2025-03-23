@@ -1,4 +1,5 @@
 import subprocess
+from .agent import Agent
 import litellm
 import os
 from .agent import Agent
