@@ -9,8 +9,25 @@ from sou.prompt.prompts import (
     get_task_instruction_math,
     get_task_instruction_multi_choice,
     get_task_instruction_code,
+    get_planning_instruction,
+    get_basic_task_instruction,
 )
 
+def get_planning_prompt(
+    question: str,
+    max_search_limit: int = 6,
+    broaden: bool = False,
+) -> str:
+    """
+    Get the planning prompt for the model.
+    """
+    return get_planning_instruction(query=question, MAX_SEARCH_LIMIT=max_search_limit, broaden=broaden)
+
+def get_basic_generation_prompt(question: str, max_search_limit: int = 5):
+    instruction = get_hard_question_instruction(max_search_limit)
+    user_prompt = get_basic_task_instruction(question)
+
+    return instruction+user_prompt
 
 def get_instruction_and_prompt(
     dataset_name: str,

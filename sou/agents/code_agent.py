@@ -1,16 +1,16 @@
 import subprocess
 import litellm
 import os
+from .agent import Agent
 
-
-class CodeAgent:
+class CodeAgent(Agent):
     """Agent that generates Python code from a given query using a Language Model and executes it safely in Docker."""
 
     def __init__(
-        self, model_name=None, api_key=None, docker_image_name="python_executor"
+        self, name:str="code_agent", model=None, docker_image_name="python_executor"
     ):
-        self.model_name = model_name
-        self.api_key = api_key
+        self.name = name
+        self.model = model
         self.docker_image_name = docker_image_name
         self.build_docker_image()
 
@@ -43,16 +43,7 @@ class CodeAgent:
     def generate_code(self, query: str, context: str = "") -> str:
         """Generate Python code from a given query using a Language Model and execute it in Docker."""
         prompt = f"Given the Context: {context}\n\nWrite a Python script that solves the Problem. Ensure it can be run and outputs results directly. OUTPUT ONLY CODE. Problem: {query}"
-        response = litellm.completion(
-            model=self.model_name,
-            messages=[
-                {"role": "system", "content": "You are a helpful coding assistant."},
-                {"role": "user", "content": prompt},
-            ],
-            api_key=self.api_key,
-        )
-
-        result = response["choices"][0]["message"]["content"]
+        result = self.model.generate_response_from_prompt(prompt)
 
         if "```python" in result:
             result = result[

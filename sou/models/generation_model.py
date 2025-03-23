@@ -24,3 +24,8 @@ class Model:
             frequency_penalty=frequency_penalty,
         )
         return response.choices[0].message.content
+
+
+    def generate_response_from_prompt(self, prompt: str) -> str:
+        messages = [{"role": "user", "content": prompt}]
+        return self.generate_response(messages)

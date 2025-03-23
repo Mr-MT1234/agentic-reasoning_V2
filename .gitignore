@@ -3,6 +3,7 @@ output/
 datas/
 .DS_Strore
 local_mem/
+data/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

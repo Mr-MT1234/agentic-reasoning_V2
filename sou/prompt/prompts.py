@@ -1,3 +1,48 @@
+def get_planning_instruction(query: str, MAX_SEARCH_LIMIT: int, broaden: bool = False):
+    prompt = f"""
+        You are a highly skilled online researcher. Your task is to develop a clear, structured, and efficient search plan to gather accurate and relevant information from the internet. Do not provide the final answers—only design a search strategy. 
+        Query: "{query}"
+
+        Guidelines & Constraints:
+
+        Limit the total number of subtopics or search items to {MAX_SEARCH_LIMIT}.
+
+        Break down the query into logical subtopics or key questions to guide the search.
+        """
+
+    if broaden:
+        prompt += """
+        For each subtopic, include:
+
+        Primary search terms or exact phrases likely to yield quality results.
+
+        Alternative phrasings or keyword variations to broaden the scope of search.
+        Format your output as follows:
+
+        [Subtopic 1]: [Exact phrase or keyword, Alternative phrasings or keyword variations]
+        [Subtopic 2]: [Exact phrase or keyword, Alternative phrasings or keyword variations]
+        ...
+
+        Your goal is to maximize search relevance and coverage while keeping the plan concise and targeted. 
+        """
+
+    else:
+        prompt += """
+        For each subtopic, include:
+
+        Primary search terms or exact phrases likely to yield quality results.
+
+        Format your output as follows:
+
+        [Subtopic 1]: [Exact phrase or keyword]
+        [Subtopic 2]: [Exact phrase or keyword]
+        ...
+
+        Your goal is to maximize search relevance and coverage while keeping the plan concise and targeted. 
+        """
+    return prompt
+
+
 def get_hard_question_instruction(MAX_SEARCH_LIMIT):
     return (
         "You are a reasoning assistant with the ability to perform web searches and execute code to help "
@@ -13,7 +58,7 @@ def get_hard_question_instruction(MAX_SEARCH_LIMIT):
         f"You can repeat calling the tools multiple times if necessary. The maximum number of search attempts is limited to {MAX_SEARCH_LIMIT}. The code attemps are unlimited.\n\n"
         "Once you have all the information you need, continue your reasoning.\n\n"
         "Example1:\n"
-        "Question: \"Company Alpha is a biological technology company reported an annual revenue growth rate of 8% and currently has a revenue of $100 million. Determine whether its revenue exceeds the industry average 5 years later.\"\n\n"
+        'Question: "Company Alpha is a biological technology company reported an annual revenue growth rate of 8% and currently has a revenue of $100 million. Determine whether its revenue exceeds the industry average 5 years later."\n\n'
         "Assistant thinking steps:\n\n"
         "To compare the revenue of Company Alpha with the industry average for biological technology companies in five years, I first need to calculate the projected revenue for Company Alpha using Python code. The compound growth formula is:\n"
         "Future Revenue = Current Revenue * (1 + growth_rate)^years\n\n"
@@ -61,7 +106,7 @@ def get_math_search_o1_instruction(MAX_SEARCH_LIMIT):
         f"You can repeat the search process multiple times if necessary. The maximum number of search attempts is limited to {MAX_SEARCH_LIMIT}.\n\n"
         "Once you have all the information you need, continue your reasoning.\n\n"
         "Example:\n"
-        "Question: \"How do you compute the integral of e^(x^2) dx?\"\n"
+        'Question: "How do you compute the integral of e^(x^2) dx?"\n'
         "Assistant thinking steps:\n"
         "- I might need to look up techniques for integrating e^(x^2).\n\n"
         "Assistant:\n"
@@ -83,7 +128,7 @@ def get_code_search_o1_instruction(MAX_SEARCH_LIMIT):
         f"You can repeat the search process multiple times if necessary. The maximum number of search attempts is limited to {MAX_SEARCH_LIMIT}.\n\n"
         "Once you have all the information you need, continue your reasoning.\n\n"
         "Example:\n"
-        "Question: \"Find the minimum number of vertices in a Steiner tree that includes all specified vertices in a given tree.\"\n"
+        'Question: "Find the minimum number of vertices in a Steiner tree that includes all specified vertices in a given tree."\n'
         "Assistant thinking steps:\n"
         "- I need to understand what a Steiner tree is and how to compute the minimum number of vertices required to include all specified vertices in a given tree.\n\n"
         "Assistant:\n"
@@ -146,7 +191,7 @@ def get_singleqa_search_o1_instruction(MAX_SEARCH_LIMIT):
         f"You can repeat the search process multiple times if necessary. The maximum number of search attempts is limited to {MAX_SEARCH_LIMIT}.\n\n"
         "Once you have all the information you need, continue your reasoning.\n\n"
         "Example:\n"
-        "Question: \"Who got the first Nobel Prize in Physics?\"\n"
+        'Question: "Who got the first Nobel Prize in Physics?"\n'
         "Assistant thinking steps:\n"
         "- I need to find out who was awarded the first Nobel Prize in Physics.\n\n"
         "Assistant:\n"
@@ -158,6 +203,7 @@ def get_singleqa_search_o1_instruction(MAX_SEARCH_LIMIT):
         "- When done searching, continue your reasoning.\n\n"
     )
 
+
 def get_multiqa_search_o1_instruction(MAX_SEARCH_LIMIT):
     return (
         "You are a reasoning assistant with the ability to perform web searches to help "
@@ -167,7 +213,7 @@ def get_multiqa_search_o1_instruction(MAX_SEARCH_LIMIT):
         f"You can repeat the search process multiple times if necessary. The maximum number of search attempts is limited to {MAX_SEARCH_LIMIT}.\n\n"
         "Once you have all the information you need, continue your reasoning.\n\n"
         "Example:\n"
-        "Question: \"Alice David is the voice of Lara Croft in a video game developed by which company?\"\n"
+        'Question: "Alice David is the voice of Lara Croft in a video game developed by which company?"\n'
         "Assistant thinking steps:\n"
         "- I need to find out who voices Lara Croft in the video game.\n"
         "- Then, I need to determine which company developed that video game.\n\n"
@@ -184,7 +230,7 @@ def get_multiqa_search_o1_instruction(MAX_SEARCH_LIMIT):
         "- When done searching, continue your reasoning.\n\n"
     )
 
-    
+
 def get_singleqa_rag_agent_instruction(MAX_SEARCH_LIMIT, MAX_URL_FETCH):
     return (
         "You are a reasoning assistant with the ability to perform web searches and retrieve webpage content to help "
@@ -198,7 +244,7 @@ def get_singleqa_rag_agent_instruction(MAX_SEARCH_LIMIT, MAX_URL_FETCH):
         f"You can fetch up to {MAX_URL_FETCH} URLs for detailed information.\n\n"
         "Once you have all the information you need, continue your reasoning.\n\n"
         "Example:\n"
-        "Question: \"Who got the first Nobel Prize in Physics?\"\n"
+        'Question: "Who got the first Nobel Prize in Physics?"\n'
         "Assistant thinking steps:\n"
         "- I need to find out who was awarded the first Nobel Prize in Physics.\n\n"
         "Assistant:\n"
@@ -233,7 +279,7 @@ def get_multiqa_rag_agent_instruction(MAX_SEARCH_LIMIT, MAX_URL_FETCH):
         f"You can fetch up to {MAX_URL_FETCH} URLs for detailed information.\n\n"
         "Once you have all the information you need, continue your reasoning.\n\n"
         "Example:\n"
-        "Question: \"Alice David is the voice of Lara Croft in a video game developed by which company?\"\n"
+        'Question: "Alice David is the voice of Lara Croft in a video game developed by which company?"\n'
         "Assistant thinking steps:\n"
         "- I need to find out who voices Lara Croft in the video game.\n"
         "- Then, I need to determine which company developed that video game.\n\n"
@@ -256,7 +302,7 @@ def get_multiqa_rag_agent_instruction(MAX_SEARCH_LIMIT, MAX_URL_FETCH):
         "<|begin_search_result|> ...search results without full page... <|end_search_result|>\n\n"
         "Assistant thinks: The search results mention the company that developed the video game featuring Alice David as Lara Croft.\n\n"
         "Assistant:\n"
-        "<|begin_url|>http://example.com/lara_croft_voice_actor.html, http://example.com/game_developer.html<|end_url|>\n\n" 
+        "<|begin_url|>http://example.com/lara_croft_voice_actor.html, http://example.com/game_developer.html<|end_url|>\n\n"
         "(System returns full page content)\n\n"
         "Assistant:\n"
         "<|begin_full_page|> ...full page content... <|end_full_page|>\n\n"
@@ -281,7 +327,7 @@ def get_gpqa_rag_agent_instruction(MAX_SEARCH_LIMIT, MAX_URL_FETCH):
         f"You can fetch up to {MAX_URL_FETCH} URLs for detailed information.\n\n"
         "Once you have all the information you need, continue your reasoning.\n\n"
         "Example:\n"
-        "Question: \"What is the energy range of pp III neutrinos?\"\n"
+        'Question: "What is the energy range of pp III neutrinos?"\n'
         "Assistant thinking steps:\n"
         "- I might need to look up details about pp III neutrinos.\n\n"
         "Assistant:\n"
@@ -291,7 +337,7 @@ def get_gpqa_rag_agent_instruction(MAX_SEARCH_LIMIT, MAX_URL_FETCH):
         "<|begin_search_result|> ...search results without full page... <|end_search_result|>\n\n"
         "Assistant thinks: The search results mention some URLs. I want full details from one of them.\n\n"
         "Assistant:\n"
-        "<|begin_url|>http://example.com/ppIII_neutrino.html<|end_url|>\n\n" 
+        "<|begin_url|>http://example.com/ppIII_neutrino.html<|end_url|>\n\n"
         "(System returns full page content)\n\n"
         "Assistant:\n"
         "<|begin_full_page|> ...full page content... <|end_full_page|>\n\n"
@@ -316,7 +362,7 @@ def get_math_rag_agent_instruction(MAX_SEARCH_LIMIT, MAX_URL_FETCH):
         f"You can fetch up to {MAX_URL_FETCH} URLs for detailed information.\n\n"
         "Once you have all the information you need, continue your reasoning.\n\n"
         "Example:\n"
-        "Question: \"How do you compute the integral of e^(x^2) dx?\"\n"
+        'Question: "How do you compute the integral of e^(x^2) dx?"\n'
         "Assistant thinking steps:\n"
         "- I might need to look up techniques for integrating e^(x^2).\n\n"
         "Assistant:\n"
@@ -326,7 +372,7 @@ def get_math_rag_agent_instruction(MAX_SEARCH_LIMIT, MAX_URL_FETCH):
         "<|begin_search_result|> ...search results without full page... <|end_search_result|>\n\n"
         "Assistant thinks: The search results mention some URLs. I want full details from one of them.\n\n"
         "Assistant:\n"
-        "<|begin_url|>http://example.com/integration_e_x_squared.html<|end_url|>\n\n" 
+        "<|begin_url|>http://example.com/integration_e_x_squared.html<|end_url|>\n\n"
         "(System returns full page content)\n\n"
         "Assistant:\n"
         "<|begin_full_page|> ...full page content... <|end_full_page|>\n\n"
@@ -351,7 +397,7 @@ def get_code_rag_agent_instruction(MAX_SEARCH_LIMIT, MAX_URL_FETCH):
         f"You can fetch up to {MAX_URL_FETCH} URLs for detailed information.\n\n"
         "Once you have all the information you need, continue your reasoning.\n\n"
         "Example:\n"
-        "Question: \"How do I implement a binary search algorithm in Python?\"\n"
+        'Question: "How do I implement a binary search algorithm in Python?"\n'
         "Assistant thinking steps:\n"
         "- I might need to look up the implementation details of binary search in Python.\n\n"
         "Assistant:\n"
@@ -361,7 +407,7 @@ def get_code_rag_agent_instruction(MAX_SEARCH_LIMIT, MAX_URL_FETCH):
         "<|begin_search_result|> ...search results without full page... <|end_search_result|>\n\n"
         "Assistant thinks: The search results mention some URLs. I want full details from one of them.\n\n"
         "Assistant:\n"
-        "<|begin_url|>http://example.com/python_binary_search.html<|end_url|>\n\n" 
+        "<|begin_url|>http://example.com/python_binary_search.html<|end_url|>\n\n"
         "(System returns full page content)\n\n"
         "Assistant:\n"
         "<|begin_full_page|> ...full page content... <|end_full_page|>\n\n"
@@ -382,75 +428,84 @@ def get_naive_rag_instruction(question, documents):
         f"{documents}\n"
     )
 
-
+def get_basic_task_instruction(question, model_name=None):
+    user_prompt = (
+        f"""
+        Please answer the following question. 
+        Question:\n{question}
+        """
+    )
+    return user_prompt
 
 def get_task_instruction_openqa(question, model_name=None):
-    if model_name == 'qwq':
+    if model_name == "qwq":
         user_prompt = (
-            'Please answer the following question. '
-            'You should provide your final answer in the format \\boxed{YOUR_ANSWER}.\n\n'
-            f'Question:\n{question}\n\n'
+            "Please answer the following question. "
+            "You should provide your final answer in the format \\boxed{YOUR_ANSWER}.\n\n"
+            f"Question:\n{question}\n\n"
         )
     else:
         user_prompt = (
-            'Please answer the following question. You should think step by step to solve it.\n\n'
-            'Provide your final answer in the format \\boxed{YOUR_ANSWER}.\n\n'
-            f'Question:\n{question}\n\n'
+            "Please answer the following question. You should think step by step to solve it.\n\n"
+            "Provide your final answer in the format \\boxed{YOUR_ANSWER}.\n\n"
+            f"Question:\n{question}\n\n"
         )
     return user_prompt
+
 
 def get_task_instruction_math(question, model_name=None):
-    if model_name == 'qwq':
+    if model_name == "qwq":
         user_prompt = (
-            'Please answer the following math question. '
-            'You should provide your final answer in the format \\boxed{YOUR_ANSWER}.\n\n'
-            f'Question:\n{question}\n\n'
+            "Please answer the following math question. "
+            "You should provide your final answer in the format \\boxed{YOUR_ANSWER}.\n\n"
+            f"Question:\n{question}\n\n"
         )
     else:
         user_prompt = (
-            'Please answer the following math question. You should think step by step to solve it.\n\n'
-            'Provide your final answer in the format \\boxed{YOUR_ANSWER}.\n\n'
-            f'Question:\n{question}\n\n'
+            "Please answer the following math question. You should think step by step to solve it.\n\n"
+            "Provide your final answer in the format \\boxed{YOUR_ANSWER}.\n\n"
+            f"Question:\n{question}\n\n"
         )
     return user_prompt
+
 
 def get_task_instruction_multi_choice(question, model_name=None):
-    if model_name == 'qwq':
+    if model_name == "qwq":
         user_prompt = (
-            'Please answer the following multiple-choice question. '
-            'You should provide your final choice in the format \\boxed{YOUR_CHOICE}.\n\n'
-            f'Question:\n{question}\n\n'
+            "Please answer the following multiple-choice question. "
+            "You should provide your final choice in the format \\boxed{YOUR_CHOICE}.\n\n"
+            f"Question:\n{question}\n\n"
         )
-    elif model_name == 'llama':
+    elif model_name == "llama":
         user_prompt = (
-            'Please answer the following multiple-choice question. You should think step by step to solve it.\n\n'
-            'Provide your final choice in the format \\boxed{YOUR_CHOICE}. Your final choice should be one of the letters A, B, C, or D, DO NOT include any answer content.\n\n'
-            f'Question:\n{question}\n\n'
+            "Please answer the following multiple-choice question. You should think step by step to solve it.\n\n"
+            "Provide your final choice in the format \\boxed{YOUR_CHOICE}. Your final choice should be one of the letters A, B, C, or D, DO NOT include any answer content.\n\n"
+            f"Question:\n{question}\n\n"
         )
     else:
         user_prompt = (
-            'Please answer the following multiple-choice question. You should think step by step to solve it.\n\n'
-            'Provide your final choice in the format \\boxed{YOUR_CHOICE}.\n\n'
-            f'Question:\n{question}\n\n'
+            "Please answer the following multiple-choice question. You should think step by step to solve it.\n\n"
+            "Provide your final choice in the format \\boxed{YOUR_CHOICE}.\n\n"
+            f"Question:\n{question}\n\n"
         )
     return user_prompt
 
+
 def get_task_instruction_code(question, question_title=None, model_name=None):
-    if model_name == 'qwq':
+    if model_name == "qwq":
         user_prompt = (
-            'Generate a correct Python program that passes all tests for the given problem. '
-            'You should provide your final code within a Python code block using triple backticks (```python\n'
-            'YOUR_CODE\n'
-            '```).\n\n'
-            f'Problem Title: {question_title}\n\n'
-            f'Problem Statement:\n{question}\n\n'
+            "Generate a correct Python program that passes all tests for the given problem. "
+            "You should provide your final code within a Python code block using triple backticks (```python\n"
+            "YOUR_CODE\n"
+            "```).\n\n"
+            f"Problem Title: {question_title}\n\n"
+            f"Problem Statement:\n{question}\n\n"
         )
     else:
         user_prompt = (
-            'You will be given a question (problem specification) and will generate a correct Python program that matches the specification and passes all tests. '
-            f'You should think step by step to solve it.\n\nQuestion:\n{question}\n\n'
-            'Read the inputs from stdin solve the problem and write the answer to stdout (do not directly test on the sample inputs). Enclose your code within delimiters as follows.\n\n'
+            "You will be given a question (problem specification) and will generate a correct Python program that matches the specification and passes all tests. "
+            f"You should think step by step to solve it.\n\nQuestion:\n{question}\n\n"
+            "Read the inputs from stdin solve the problem and write the answer to stdout (do not directly test on the sample inputs). Enclose your code within delimiters as follows.\n\n"
             "```python\n# YOUR CODE HERE\n```\n\n"
         )
     return user_prompt
-

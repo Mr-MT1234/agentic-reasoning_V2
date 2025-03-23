@@ -1,11 +1,15 @@
 # Hypothetical imports (adjust based on your actual package/module structure):
 from nano_graphrag import GraphRAG
+from .agent import Agent
 
 
-class GraphRAGAgent:
-    def __init__(self, name: str, working_dir: str) -> None:
+class GraphRAGAgent(Agent):
+    def __init__(self, name: str="rag_agent", working_dir: str=None) -> None:
         self.name = name
-        self.kg = GraphRAG(working_dir)
+        if working_dir is None:
+            self.kg = GraphRAG()
+        else:
+            self.kg = GraphRAG(working_dir)
 
     def answer_query(self, query: str, store_result: bool = True) -> str:
         print(
