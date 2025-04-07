@@ -45,13 +45,19 @@ def run_reasoning(
 
 
 def run_reasoning_loop(
-    agent_list: dict[str, Agent],
-    reasoning_settings: ReasoningSettings,
-    sequence: Sequence,
+    prompt:str,
+    agent_list: dict[str, Agent] = None,
+    reasoning_settings: ReasoningSettings = None,
+    
 ):
     """
     Loop to complete reasoning over multiple steps.
     """
+    sequence = Sequence(prompt)
+
+    if agent_list is None:
+        agent_list = initialize_agents(reasoning_settings)
+        
     if reasoning_settings.forcing_search:
         search_agent = agent_list.get("search_agent")
         search_query = search_agent.run(

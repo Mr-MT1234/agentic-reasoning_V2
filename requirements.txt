@@ -1,3 +1,4 @@
 nano_graphrag
 tavily-python
 litellm
+docker
