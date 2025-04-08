@@ -1,57 +1,94 @@
 import torch
 import torch.nn.functional as F
-from transformers import AutoModel, AutoTokenizer
+from pydantic import BaseModel
+
+from sou.models.embedding_model import EmbeddingModel
+from sou.models.generation_model import Model as GenerationModel
 
 from .agent import Agent
+
+
+class Document(BaseModel):
+    content: str
+    embedding: list[float]
 
 
 class RAGAgent(Agent):
     def __init__(
         self,
+        llm_model: GenerationModel,
+        embedding_model: EmbeddingModel,
         name: str = "rag_agent",
-        llm_model = None,
-        embedding_model_path: str = "Alibaba-NLP/gte-base-en-v1.5",
-        device: str = "cpu",
+        chunk_size: int = 512,
+        chunk_overlap: int = 50,
     ) -> None:
         self.name = name
         self.documents = []
-        self.tokenizer = AutoTokenizer.from_pretrained(embedding_model_path)
-        self.model = AutoModel.from_pretrained(
-            embedding_model_path, trust_remote_code=True
-        ).to(device)
+        self.embedding_model = embedding_model
         self.llm_model = llm_model
+        self.device = embedding_model.device
+        self.chunk_size = chunk_size
+        self.chunk_overlap = chunk_overlap
+        # Use the tokenizer from the provided embedding model
+        self.tokenizer = self.embedding_model.tokenizer
 
     def purge_document_base(self):
         self.documents = []
 
-    def store_documents(self, documents:list[str]):
-        batch_dict = self.tokenizer(input_texts, max_length=8192, padding=True, truncation=True, return_tensors='pt').to(device)
-        outputs = self.model(**batch_dict)
-        embeddings = outputs.last_hidden_state[:, 0].to_list()
-        self.documents.extend(embeddings)
+    def chunk_document(self, document: str) -> list[str]:
+        tokens = self.tokenizer.tokenize(document)
+        chunks = []
+        start = 0
+        while start < len(tokens):
+            end = min(start + self.chunk_size, len(tokens))
+            chunk = self.tokenizer.convert_tokens_to_string(tokens[start:end])
+            chunks.append(chunk)
+            start += self.chunk_size - self.chunk_overlap
+        return chunks
+
+    def store_documents(self, documents: list[str]):
+        all_chunks = []
+        for doc in documents:
+            all_chunks.extend(self.chunk_document(doc))
+
+        embeddings = self.embedding_model.generate_embeddings(all_chunks)
+
+        documents = [
+            Document(content=chunk, embedding=embedding)
+            for chunk, embedding in zip(all_chunks, embeddings)
+        ]
+        self.documents.extend(documents)
+
+    def retrieve_documents(self, query: str) -> list[Document]:
+        query_embedding = self.embedding_model.generate_embedding(query)
+        scores = []
+        for doc in self.documents:
+            score = F.cosine_similarity(
+                torch.tensor([query_embedding]).to(self.device),
+                torch.tensor([doc.embedding]).to(self.device),
+            )
+            scores.append((doc, score.item()))
+
+        scores.sort(key=lambda x: x[1], reverse=True)
+        return [doc for doc, _ in scores[:5]]
+
+    def query(self, query: str) -> str:
+        retrieved_docs = self.retrieve_documents(query)
+        context = "\n".join([doc.content for doc in retrieved_docs])
+
+        messages = [
+            {
+                "role": "system",
+                "content": PROMPT.format(question=query, context=context),
+            },
+        ]
+        response = self.llm_model.generate_response(messages)
+
+        return response
 
 
-    def query(self, query:str):
-
-
-    def answer_query(self, query: str, store_result: bool = True) -> str:
-        print(
-            f"[{self.name}] Retrieving context from knowledge graph for answering query: {query}"
-        )
-        return self.kg.query(query)
-
-    def summary_prev_reasoning(self, query: str) -> str:
-        print(f"[{self.name}] Retrieving context from knowledge graph for: {query}")
-        return self.kg.query(
-            f"Summarize the reasoning process of this query: {query}, be short and clear."
-        )
-
-    def summary_context(self, query: str) -> str:
-        # print(f"[{self.name}] Retrieving context from knowledge graph for: {query}")
-        return self.kg.query(
-            f"Summarize the context of this query: {query}, be short and clear, for a human to understand better the context."
-        )
-
-    def insert_data(self, data: str) -> None:
-        print(f"[{self.name}] Inserting data into knowledge graph")
-        self.kg.insert(data)
+PROMPT = """
+You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.
+Question: {question} 
+Context: {context} 
+Answer:"""
