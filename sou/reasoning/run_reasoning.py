@@ -1,14 +1,16 @@
 # extract the research query and code query
+import os
+
+from tavily import TavilyClient
+
+from sou.agents.agent import Agent
 from sou.agents.code_agent import CodeAgent
 from sou.agents.graphrag_agent import GraphRAGAgent
 from sou.agents.search_agent import SearchAgent
-import os
-from sou.agents.agent import Agent
 from sou.models.generation_model import Model
-from .sequence import Sequence
-from .config import ReasoningSettings
 
-from tavily import TavilyClient
+from .config import ReasoningSettings
+from .sequence import Sequence
 
 
 def run_reasoning(
@@ -45,19 +47,13 @@ def run_reasoning(
 
 
 def run_reasoning_loop(
-    prompt:str,
-    agent_list: dict[str, Agent] = None,
-    reasoning_settings: ReasoningSettings = None,
-    
+    agent_list: dict[str, Agent],
+    reasoning_settings: ReasoningSettings,
+    sequence: Sequence,
 ):
     """
     Loop to complete reasoning over multiple steps.
     """
-    sequence = Sequence(prompt)
-
-    if agent_list is None:
-        agent_list = initialize_agents(reasoning_settings)
-        
     if reasoning_settings.forcing_search:
         search_agent = agent_list.get("search_agent")
         search_query = search_agent.run(

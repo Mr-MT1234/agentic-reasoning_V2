@@ -1,5 +1,5 @@
 import os
-import docker
+
 from .agent import Agent
 
 
@@ -32,7 +32,7 @@ class CodeAgent(Agent):
             path="temp/tools",
             dockerfile="Dockerfile",
             tag=self.docker_image_name,
-            rm=True
+            rm=True,
         )
 
     def generate_code(self, query: str, context: str = "") -> str:
@@ -41,9 +41,9 @@ class CodeAgent(Agent):
         result = self.model.generate_response_from_prompt(prompt)
 
         if "```python" in result:
-            result = result[result.find("```python") + 9: result.rfind("```")]
+            result = result[result.find("```python") + 9 : result.rfind("```")]
         elif "```" in result:
-            result = result[result.find("```") + 3: result.rfind("```")]
+            result = result[result.find("```") + 3 : result.rfind("```")]
 
         path = "temp/tools/temp.py"
         os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -61,9 +61,7 @@ class CodeAgent(Agent):
             container = self.docker_client.containers.run(
                 image=self.docker_image_name,
                 command=["python", "/app/temp.py"],
-                volumes={
-                    abs_path: {"bind": "/app/temp.py", "mode": "ro"}
-                },
+                volumes={abs_path: {"bind": "/app/temp.py", "mode": "ro"}},
                 working_dir="/app",
                 remove=True,
                 stdout=True,
