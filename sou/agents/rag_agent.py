@@ -86,6 +86,23 @@ class RAGAgent(Agent):
 
         return response
 
+    def summary_context(self, query: str) -> str:
+        retrieved_docs = self.retrieve_documents(query)
+        context = "\n".join([doc.content for doc in retrieved_docs])
+
+        messages = [
+            {
+                "role": "system",
+                "content": SUMMARY_PROMPT.format(question=query, context=context),
+            }
+        ]
+        response = self.llm_model.generate_response(messages)
+        return response
+
+SUMMARY_PROMPT = """
+You are an assistant for summarization tasks. Use the following pieces of retrieved context to summarize the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.
+"""
+
 
 PROMPT = """
 You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.

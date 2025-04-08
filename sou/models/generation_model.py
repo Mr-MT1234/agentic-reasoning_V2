@@ -1,4 +1,5 @@
 from litellm import completion
+from transformers import AutoModel, AutoTokenizer
 
 
 class Model:
@@ -14,6 +15,11 @@ class Model:
         stop_tokens: list = None,
         frequency_penalty: float = None,
     ) -> str:
+        # print number of token with autotokenizer
+        tokenizer = AutoTokenizer.from_pretrained("gpt2")
+        print("===========token count", len(tokenizer.tokenize(messages[0]["content"])))
+        print(messages[0]["content"])
+
         response = completion(
             model=self.model_name,
             messages=messages,
@@ -24,7 +30,6 @@ class Model:
             frequency_penalty=frequency_penalty,
         )
         return response.choices[0].message.content
-
 
     def generate_response_from_prompt(self, prompt: str) -> str:
         messages = [{"role": "user", "content": prompt}]

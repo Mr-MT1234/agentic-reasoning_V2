@@ -51,7 +51,7 @@ class SearchAgent(Agent):
         # TODO: Implement the analysis logic here
 
         if self.knowledge_graph is not None:
-            self.knowledge_graph.insert_data(data)
+            self.knowledge_graph.store_documents(data)
             print(f"[{self.name}] Stored data in KnowledgeGraph")
 
     def run(self, query: str, deep_search:bool=False):

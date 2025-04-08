@@ -40,7 +40,6 @@ class Sequence:
 
         if search_query is None and code_query is None and rag_query is None:
             self.finished = True
-
         return search_query, code_query, rag_query
 
         
