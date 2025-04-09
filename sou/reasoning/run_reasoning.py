@@ -1,15 +1,22 @@
 # extract the research query and code query
+import os
+
+from tavily import TavilyClient
+
+from sou.agents.agent import Agent
 from sou.agents.code_agent import CodeAgent
 from sou.agents.rag_agent import RAGAgent
 from sou.agents.search_agent import SearchAgent
-import os
-from sou.agents.agent import Agent
-from sou.models.generation_model import Model
 from sou.models.embedding_model import EmbeddingModel
-from .sequence import Sequence
-from .config import ReasoningSettings
+from sou.models.generation_model import Model
+from sou.prompt.config import (
+    END_CODE_QUERY,
+    END_MIND_MAP_QUERY,
+    END_SEARCH_QUERY,
+)
 
-from tavily import TavilyClient
+from .config import ReasoningSettings
+from .sequence import Sequence
 
 
 def run_reasoning(
@@ -25,23 +32,31 @@ def run_reasoning(
     rag_agent = agent_list.get("rag_agent")
 
     generation_model = Model(model_name=reasoning_settings.model_name)
-    output = generation_model.generate_response_from_prompt(sequence.prompt)
+    output = generation_model.generate_response_from_prompt(
+        sequence.prompt,
+        stop_tokens=[END_SEARCH_QUERY, END_CODE_QUERY, END_MIND_MAP_QUERY],
+    )
     search_query, code_query, rag_query = sequence.set_output(output)
+    print(
+        f"Search query: {search_query} Code query: {code_query} Rag query: {rag_query}"
+    )
     if reasoning_settings.use_search_agent and search_query is not None:
+        print(f"Running Search Agent")
         search_result = search_agent.run(search_query)
         # Generate a new context
         try:
             context = rag_agent.summary_context(search_query)
-            sequence.add_context(context)
+            sequence.complete_output(answer=context, answer_type="search")
         except Exception as e:
             sequence.complete_output(answer=search_result, answer_type="search")
 
-
     if reasoning_settings.use_code_agent and code_query is not None:
+        print(f"Running Code Agent")
         code_result = code_agent(code_query)
         sequence.complete_output(answer=code_result, answer_type="code")
 
     if reasoning_settings.use_rag_agent and rag_query is not None:
+        print(f"Running RAG Agent")
         rag_result = rag_agent.query(rag_query)
         sequence.complete_output(answer=rag_result, answer_type="rag")
 
@@ -62,6 +77,7 @@ def run_reasoning_loop(
     if agent_list is None:
         agent_list = initialize_agents(reasoning_settings)
 
+    print(f"Forcing search: {reasoning_settings.forcing_search}")
     if reasoning_settings.forcing_search:
         search_agent = agent_list.get("search_agent")
         _ = search_agent.run(
@@ -70,8 +86,9 @@ def run_reasoning_loop(
 
     if reasoning_settings.use_rag_agent:
         rag_agent = agent_list.get("rag_agent")
-        context = rag_agent.summary_context(sequence.question)
-        sequence.add_context(context)
+        if reasoning_settings.forcing_search:
+            context = rag_agent.summary_context(sequence.question)
+            sequence.add_context(context)
 
     while not sequence.finished:
         sequence = run_reasoning(agent_list, reasoning_settings, sequence)
@@ -120,7 +137,14 @@ def post_processing(sequence: Sequence, llm_model: Model):
     Post-processing of the reasoning output.
     """
     PROMPT = """
-    Given the following context: {context}, answer the question: {query}.
+    Given the following context:
+    
+    '''
+    {context}
+    '''
+
+
+    answer the question: {query}.
     """
     if sequence.final_result is not None:
         return sequence.final_result

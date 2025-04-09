@@ -18,7 +18,7 @@ class Model:
         # print number of token with autotokenizer
         tokenizer = AutoTokenizer.from_pretrained("gpt2")
         print("===========token count", len(tokenizer.tokenize(messages[0]["content"])))
-        print(messages[0]["content"])
+        print(f"Prompt : \n {messages[0]['content']}")
 
         response = completion(
             model=self.model_name,
@@ -29,8 +29,28 @@ class Model:
             stop=stop_tokens,
             frequency_penalty=frequency_penalty,
         )
-        return response.choices[0].message.content
 
-    def generate_response_from_prompt(self, prompt: str) -> str:
+        response = response.choices[0].message.content
+
+        print(f"Response : \n {response}")
+
+        return response
+
+    def generate_response_from_prompt(
+        self,
+        prompt: str,
+        temperature: int = 0.7,
+        top_p: float = None,
+        max_tokens: int = None,
+        stop_tokens: list = None,
+        frequency_penalty: float = None,
+    ) -> str:
         messages = [{"role": "user", "content": prompt}]
-        return self.generate_response(messages)
+        return self.generate_response(
+            messages=messages,
+            temperature=temperature,
+            top_p=top_p,
+            max_tokens=max_tokens,
+            stop_tokens=stop_tokens,
+            frequency_penalty=frequency_penalty,
+        )

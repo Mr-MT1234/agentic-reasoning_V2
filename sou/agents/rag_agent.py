@@ -19,11 +19,11 @@ class RAGAgent(Agent):
         llm_model: GenerationModel,
         embedding_model: EmbeddingModel,
         name: str = "rag_agent",
-        chunk_size: int = 512,
+        chunk_size: int = 1024,
         chunk_overlap: int = 50,
     ) -> None:
         self.name = name
-        self.documents = []
+        self.documents: list[Document] = []
         self.embedding_model = embedding_model
         self.llm_model = llm_model
         self.device = embedding_model.device
@@ -99,8 +99,15 @@ class RAGAgent(Agent):
         response = self.llm_model.generate_response(messages)
         return response
 
+
 SUMMARY_PROMPT = """
 You are an assistant for summarization tasks. Use the following pieces of retrieved context to summarize the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.
+
+# Context: 
+{context}
+
+# Question: 
+{question}
 """
 
 
