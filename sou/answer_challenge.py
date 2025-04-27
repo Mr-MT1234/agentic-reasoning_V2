@@ -23,9 +23,10 @@ class Entent(Enum):
     CallCodingAgent = 0
     CallKnowledgeAgent = 1
     GiveUp = 2
-
+main_model = 'gpt-4o-mini'
+expert_model = 'gpt-4o-mini'
 def run_reasoning(prompt) -> tuple[Entent, str]:
-    generation_model = Model(model_name="ollama/llama3.2")
+    generation_model = Model(model_name=main_model)
     output = generation_model.generate_response_from_prompt(
         prompt,
         stop_tokens=[CODING_QUERY_END, KNOWLEDGE_QUERY_END],
@@ -62,9 +63,9 @@ def run_reasoning(prompt) -> tuple[Entent, str]:
 def run_reasoning_loop(
     challenge: str,
 ):
-    ollama_model = Model(model_name="ollama/llama3.1")
+    ollama_model = Model(model_name=main_model)
     coding_agent = CodingAgent(ollama_model)
-    knowledge_agent = KnowledgeAgent(Model(model_name="gpt-4o-mini"))
+    knowledge_agent = KnowledgeAgent(Model(model_name=expert_model))
     final_output = None
     prompt = get_hard_question_instruction(challenge)
     while True:
