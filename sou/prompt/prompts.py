@@ -43,7 +43,7 @@ def get_planning_instruction(query: str, MAX_SEARCH_LIMIT: int, broaden: bool = 
     return prompt
 
 
-def get_hard_question_instruction(MAX_SEARCH_LIMIT):
+def get_hard_question_instruction():
     return (
         "You are a reasoning assistant with the ability to access a local mind map "
         "you solve the user's challenge (query) accurately by providing a pseudo code, and then use the code agent to translate the pseudo code into a python code. Your final answer should contain the complete python code. You have special tools:\n\n"
