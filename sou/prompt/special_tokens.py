@@ -1,0 +1,6 @@
+CODING_QUERY_BEGIN = "<coding_assistant_begin>"
+CODING_QUERY_END = "<coding_assistant_end>"
+KNOWLEDGE_QUERY_BEGIN = "<knowledge_query_begin>"
+KNOWLEDGE_QUERY_END = "<knowledge_query_end>"
+KNOWLEDGE_RESULT_BEGIN = "<knowledge_result_begin>"
+KNOWLEDGE_RESULT_END = "<knowledge_result_end>"
