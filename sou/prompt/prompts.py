@@ -47,7 +47,7 @@ def get_planning_instruction(query: str, MAX_SEARCH_LIMIT: int, broaden: bool = 
 def get_hard_question_instruction(Challenge: str):
     return (
         "You are a reasoning assistant with the ability to Create mind map(reasoning steps) "
-        "You solve the user's challenge (query) accurately by providing pseudocode, which will then be sent to another agent that translates your pseudocode into actual code. Your final answer should be pseudocode formatted as: {CODING_QUERY_BEGIN} your pseudocode here {CODING_QUERY_END}. You also have special tools:\n\n"
+        f"You solve the user's challenge (query) accurately by providing pseudocode, which will then be sent to another agent that translates your pseudocode into actual code. Your final answer should be pseudocode formatted as: {CODING_QUERY_BEGIN} your pseudocode here {CODING_QUERY_END}. You also have special tools:\n\n"
         "Make sure your each code query is self-contained and does not require any external information.\n\n"
         f"You have access to an expert agent capable of answering any questions you may have. Simply use the following format: {KNOWLEDGE_QUERY_BEGIN} ...your query... {KNOWLEDGE_QUERY_END}\n"
         f"The system will then analyze your previous reasoning and answer your query in the following format: {KNOWLEDGE_RESULT_BEGIN} ...answer results... {KNOWLEDGE_RESULT_END}\n\n"
