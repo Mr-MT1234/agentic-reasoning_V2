@@ -25,20 +25,20 @@ class Entent(Enum):
     GiveUp = 2
 
 def run_reasoning(prompt) -> tuple[Entent, str]:
-    prompt = ""
-
-    generation_model = Model(model_name="reasoning_model")
+    generation_model = Model(model_name="ollama/llama3.2")
     output = generation_model.generate_response_from_prompt(
         prompt,
-        stop_tokens=[CODING_QUERY_BEGIN, KNOWLEDGE_QUERY_END],
+        stop_tokens=[CODING_QUERY_END, KNOWLEDGE_QUERY_END],
     )
+
+    print("output",output)
 
     if CODING_QUERY_BEGIN in output:
         start_query = output.find(CODING_QUERY_BEGIN) + len(CODING_QUERY_BEGIN)
         end_query = output.find(CODING_QUERY_END, start_query)
 
         if end_query == -1:
-            output += CODING_QUERY_BEGIN
+            output += CODING_QUERY_END
             end_query = len(output)
 
         entent = Entent.CallCodingAgent
@@ -64,10 +64,11 @@ def run_reasoning_loop(
 ):
     ollama_model = Model(model_name="ollama/llama3.2")
     coding_agent = CodingAgent(ollama_model)
-    knowledge_agent = KnowledgeAgent(ollama_model)
+    knowledge_agent = KnowledgeAgent(Model(model_name="gpt-4o-mini"))
     final_output = None
     prompt = get_hard_question_instruction(challenge)
     while True:
+        print("reasoning")
         entent, query = run_reasoning(prompt)
 
         if entent == Entent.CallKnowledgeAgent:
@@ -96,6 +97,8 @@ def condition_failure_speed(failure_rate: callable, t: float) -> float:
     10
     '''
 """
+
+    print(challenge)
     run_reasoning_loop(challenge)
 
     

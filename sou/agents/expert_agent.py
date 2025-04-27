@@ -1,5 +1,5 @@
 from .agent import Agent
-from ..models.generation_model import Model 
+from models.generation_model import Model 
 
 class KnowledgeAgent(Agent):
     def __init__(self, llm_model: Model, name: str="knowledge agent"):

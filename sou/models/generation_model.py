@@ -20,15 +20,28 @@ class Model:
         print("===========token count", len(tokenizer.tokenize(messages[0]["content"])))
         print(f"Prompt : \n {messages[0]['content']}")
 
-        response = completion(
-            model=self.model_name,
-            messages=messages,
-            temperature=temperature,
-            top_p=top_p,
-            max_tokens=max_tokens,
-            stop=stop_tokens,
-            frequency_penalty=frequency_penalty,
-        )
+        if self.model_name.startswith("ollama/"):
+            response = completion(
+                model=self.model_name,
+                messages=messages,
+                temperature=temperature,
+                top_p=top_p,
+                max_tokens=max_tokens,
+                stop=stop_tokens,
+                api_base="http://localhost:11434",
+                frequency_penalty=frequency_penalty,
+            )
+
+        else:
+            response = completion(
+                model=self.model_name,
+                messages=messages,
+                temperature=temperature,
+                top_p=top_p,
+                max_tokens=max_tokens,
+                stop=stop_tokens,
+                frequency_penalty=frequency_penalty,
+            )
 
         response = response.choices[0].message.content
 
