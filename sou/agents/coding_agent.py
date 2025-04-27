@@ -7,14 +7,14 @@ class CodingAgent(Agent):
         self.model = llm_model
 
     def generate_code(self, signature: str, instructions: str):
-        prompt = GENERATION_PROMPT.format(signature, instructions)
+        prompt = GENERATION_PROMPT.format(signature = signature, instructions = instructions)
         output = self.model.generate_response_from_prompt(prompt)
         return self._extract_code(output)
     
     def _extract_code(self, output:str):
         end = output.rfind('```')
         start = output.rfind('```', 0, end) + 3
-        if output[start].startswith('python'):
+        if output[start:].startswith('python'):
             start += len('python')
 
         return output[start: end]
@@ -75,11 +75,11 @@ def p_f_interval(reliability: callable, t: float, delta_t: float) -> float:
 # Your Input:
 Write a function of the following signature
 <signature_begin>
-{}
+{signature}
 <signature_end>
 
 The function should follow the following instructions:
 <instructions_begin>
-{}
+{instructions}
 <instructions_end>
 """
