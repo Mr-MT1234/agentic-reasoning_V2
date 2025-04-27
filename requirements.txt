@@ -1,4 +1,4 @@
 nano_graphrag
 tavily-python
-litellm
+litellm==1.67.2
 docker
