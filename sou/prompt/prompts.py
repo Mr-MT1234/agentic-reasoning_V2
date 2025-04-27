@@ -45,12 +45,12 @@ def get_planning_instruction(query: str, MAX_SEARCH_LIMIT: int, broaden: bool = 
 
 def get_hard_question_instruction(MAX_SEARCH_LIMIT):
     return (
-        "You are a reasoning assistant with the ability to access a local mind map "
+        "You are a reasoning assistant with the ability to Create mind map(reasoning steps) "
         "you solve the user's challenge (query) accurately by providing a pseudo code, and then use the code agent to translate the pseudo code into a python code. Your final answer should contain the complete python code. You have special tools:\n\n"
-        "- To transform a pseudo code into a python code, you can propose a code task using: <begin_code_query> your code query here </end_code_query>.\n"
+        "- To transform a pseudo code into a python code, you can propose a code task using: <coding_assistant_begin> your code query here <coding_assistant_end>.\n"
         "The system will write the code and provide it to you in the format <begin_code_result> ...python code... </end_code_result>.\n"
         "Make sure your each code query is self-contained and does not require any external information.\n\n"
-        "- To access your reasoning memory, you can query the automatically generated mind map using the following format: <begin_mind_map_query> your query here </end_mind_map_query>.\n"
+        "You have access to an expert agent capable of answering any questions you may have. Simply use the following format: <knowledge_assistant_begin> ...your query... <knowledge_assistant_end>\n"
         "The system will then analyze your previous reasoning and answer your query in the following format: <begin_mind_map_result> ...answer results... </end_mind_map_result>\n\n"
         f"You can repeat calling the tools multiple times if necessary. The maximum number of search attempts is limited to {MAX_SEARCH_LIMIT}. The code attempts are unlimited.\n\n"
         "Once you have all the information you need, continue your reasoning.\n\n"
