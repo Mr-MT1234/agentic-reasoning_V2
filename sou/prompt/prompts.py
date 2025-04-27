@@ -43,16 +43,14 @@ def get_planning_instruction(query: str, MAX_SEARCH_LIMIT: int, broaden: bool = 
     return prompt
 
 
-def get_hard_question_instruction():
+def get_hard_question_instruction(Challenge: str):
     return (
-        "You are a reasoning assistant with the ability to access a local mind map "
-        "you solve the user's challenge (query) accurately by providing a pseudo code, and then use the code agent to translate the pseudo code into a python code. Your final answer should contain the complete python code. You have special tools:\n\n"
-        "- To transform a pseudo code into a python code, you can propose a code task using: <begin_code_query> your code query here </end_code_query>.\n"
-        "The system will write the code and provide it to you in the format <begin_code_result> ...python code... </end_code_result>.\n"
+        "You are a reasoning assistant with the ability to Create mind map(reasoning steps) "
+        "You solve the user's challenge (query) accurately by providing pseudocode, which will then be sent to another agent that translates your pseudocode into actual code. Your final answer should be pseudocode formatted as: <coding_assistant_begin> your pseudocode here <coding_assistant_end>. You also have special tools:\n\n"
         "Make sure your each code query is self-contained and does not require any external information.\n\n"
-        "- To access your reasoning memory, you can query the automatically generated mind map using the following format: <begin_mind_map_query> your query here </end_mind_map_query>.\n"
-        "The system will then analyze your previous reasoning and answer your query in the following format: <begin_mind_map_result> ...answer results... </end_mind_map_result>\n\n"
-        f"You can repeat calling the tools multiple times if necessary. The maximum number of search attempts is limited to {MAX_SEARCH_LIMIT}. The code attempts are unlimited.\n\n"
+        "You have access to an expert agent capable of answering any questions you may have. Simply use the following format: <knowledge_assistant_begin> ...your query... <knowledge_assistant_end>\n"
+        "The system will then analyze your previous reasoning and answer your query in the following format: <knowledge_result_begin> ...answer results... <knowledge_result_end>\n\n"
+        "You can repeat calling the tools multiple times if necessary.\n\n"
         "Once you have all the information you need, continue your reasoning.\n\n"
         "Example1:\n"
         'Challenge: "def p_f_interval(reliability: callable, t: float, delta_t: float) -> float:\n\n"'
@@ -64,14 +62,14 @@ def get_hard_question_instruction():
         "Assistant thinking steps:\n\n"
         "To solve the challenge, I need to better define a reliability function and to know how to link it to failure probabilities\n\n"
         "Assistant:\n"
-        "<begin_mind_map_query>What is a reliability function, and how is the probability of failure related to the reliability function?</end_mind_map_query>\n\n"
-        "<begin_mind_map_result>\n"
+        "<knowledge_assistant_begin>What is a reliability function, and how is the probability of failure related to the reliability function?<knowledge_assistant_end>\n\n"
+        "<knowledge_result_begin>\n"
         "The reliability function R(t) gives the probability that an item survives beyond time t: R(t) = P(T > t)\n"
         "Therefore, the probability of failure before time t is: P(T ≤ t) = 1 - R(t)\n"
         "Similarly, the probability of survival after time (t + delta_t) is: P(T > t + delta_t) = R(t + delta_t)\n"
         "Thus, the probability that the item fails either before t or after t + delta_t is: P(T ≤ t) + P(T > t + delta_t) = (1 - R(t)) + R(t + delta_t)\n"
         "Note: We assume the two events (fail before t, fail after t + delta_t) are disjoint.\n"
-        "</end_mind_map_result>\n\n"
+        "<knowledge_result_end>\n\n"
         "Now, I fully understand the math.\n\n"
         "Assistant continues reasoning with the new information...\n\n"
         "Next, I will write the pseudo-code for the solution:\n"
@@ -81,21 +79,15 @@ def get_hard_question_instruction():
         "result = fail_before_t + survive_after_t_plus_delta\n"
         "return result\n\n"
         "Assistant:\n"
-        "<begin_code_query> Write a Python function p_f_interval(reliability: callable, t: float, delta_t: float) -> float that:\n"
+        "<coding_assistant_begin> Write a Python function p_f_interval(reliability: callable, t: float, delta_t: float) -> float that:\n"
         "Calculates 1 - reliability(t)\n"
         "Calculates reliability(t + delta_t)\n"
-        "Returns the sum of these two quantities. Make sure to import numpy as np. </end_code_query>\n\n"
-        "<begin_code_result>\n"
-        "import numpy as np\n\n"
-        "def p_f_interval(reliability: callable, t: float, delta_t: float) -> float:\n"
-        "   fail_before_t = 1 - reliability(t)\n"
-        "   survive_after_t_plus_delta = reliability(t + delta_t)\n"
-        "   return fail_before_t + survive_after_t_plus_delta\n"
-        "<end_code_result>\n\n"
+        "Returns the sum of these two quantities. Make sure to import numpy as np. <coding_assistant_end>\n\n"
         "Remember:\n"
-        "- Use <begin_mind_map_query> to request a search from and end with </end_mind_map_query>.\n"
-        "- Use <begin_code_query> to request a python code syntax and end with </end_code_query>.\n"
-        "- When done searching, continue your reasoning.\n\n"
+        "- Use <knowledge_assistant_begin> to ask a question to the expert agent, and end with <knowledge_assistant_end>.\n"
+        "- Use <begin_code_query> to deliver your final answer, which should be pseudocode, and end with </end_code_query>.\n"
+        "- When done asking, continue your reasoning.\n\n"
+        f"here is your challenge now :{Challenge} , follow the above instruction to solve it.\n\n"
     )
 
 
