@@ -1,0 +1,10 @@
+
+def condition_failure_speed(failure_rate: callable, t: float) -> float:
+    ''' Given a callable failure_rate, which represents the failure rate function of a lifetime distribution, calculate the speed of failure probability for the samples that suvive up to t.
+    Example:
+    >>> condition_failure_speed(lambda x: x, 10)
+    10
+    '''
+
+reasoning
+===========token count 1066

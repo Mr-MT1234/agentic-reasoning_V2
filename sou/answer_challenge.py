@@ -62,7 +62,7 @@ def run_reasoning(prompt) -> tuple[Entent, str]:
 def run_reasoning_loop(
     challenge: str,
 ):
-    ollama_model = Model(model_name="ollama/llama3.2")
+    ollama_model = Model(model_name="ollama/llama3.1")
     coding_agent = CodingAgent(ollama_model)
     knowledge_agent = KnowledgeAgent(Model(model_name="gpt-4o-mini"))
     final_output = None
