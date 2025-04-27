@@ -1,4 +1,4 @@
-from special_tokens import *
+from .special_tokens import *
 def get_planning_instruction(query: str, MAX_SEARCH_LIMIT: int, broaden: bool = False):
     prompt = f"""
         You are a highly skilled online researcher. Your task is to develop a clear, structured, and efficient search plan to gather accurate and relevant information from the internet. Do not provide the final answers—only design a search strategy. 
